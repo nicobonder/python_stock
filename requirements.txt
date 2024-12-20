@@ -1,0 +1,6 @@
+pandas
+streamlit # Tuve que hacer pip install --upgrade pip setuptools wheel
+plotly
+plotly-express
+yfinance
+plost
