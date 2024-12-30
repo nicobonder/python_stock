@@ -24,7 +24,7 @@ def fetch_pe_data():
             response = requests.get(url, headers=headers)
             response.raise_for_status()
 
-            # Analizar el contenido HTML
+            # convierte el contenido HTML de una página web en un objeto BeautifulSoup
             soup = BeautifulSoup(response.text, "html.parser")
             tables = soup.find_all("table")
 
@@ -33,14 +33,17 @@ def fetch_pe_data():
 
             for table in tables:
                 rows = table.find_all("tr")
+                # i es el indice de la fila y row es el contenido de la fila
                 for i, row in enumerate(rows):
                     # Extraer las fechas (primera fila)
                     if i == 0:
+                        # th es celda de encabezado (header), td es celda de datos (data)
                         header_cols = row.find_all(["th", "td"])
                         # Ignorar la primera columna vacía y la columna "Current". Empiezo a extraer en la 3ra columna
                         for col in header_cols[2:]:
                             date_text = col.text.strip()
                             try:
+                                # Convierto a formato de fecha "YYYY-MM-DD" y agrego a la lista pe_dates
                                 pe_dates.append(pd.to_datetime(
                                     date_text).strftime('%Y-%m-%d'))
 
@@ -67,6 +70,7 @@ def fetch_pe_data():
             # Crear el DataFrame
             pe_df = pd.DataFrame({
                 # Invertir para mantener el orden cronológico
+                # [start:end:step] por lo que [::-1] significa que los steps se hacen en sentido inverso
                 "Date": pe_dates[::-1],
                 "Trailing P/E": pe_data[::-1]
             })
@@ -74,6 +78,7 @@ def fetch_pe_data():
             # Obtener precios históricos
             stock = yf.Ticker(ticker)
             price_data = stock.history(start=min(pe_dates), end=max(pe_dates))
+            # Usar reset_index asegura que el índice vuelva a empezar desde 0 y que la columna de fechas sea una columna normal
             price_data.reset_index(inplace=True)
             price_data["Date"] = pd.to_datetime(
                 price_data["Date"]).dt.strftime('%Y-%m-%d')
@@ -82,6 +87,8 @@ def fetch_pe_data():
             price_on_dates = []
             # Voy a iterar sobre la columna de fechas del dataframe pe_df
             for date in pe_df["Date"]:
+                #  Se calula la diferencia entre la fecha de la fila actual y todas las fechas de price_data
+                # con .iloc eso se convierte en un índice y se selecciona la fila con la diferencia más pequeña
                 closest_date = price_data.iloc[
                     (pd.to_datetime(price_data["Date"]) -
                      pd.to_datetime(date)).abs().argmin()
