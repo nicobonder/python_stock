@@ -74,6 +74,9 @@ def app():
         tickersInfo = yf.download(
             tickers, start=startDate, end=endDate_adjusted)
 
+        dat = yf.Ticker(ticker_graph)
+        print(dat.info)
+
         # Seleccionar la columna 'Adj Close'
         df_adj_close = tickersInfo['Adj Close']
 

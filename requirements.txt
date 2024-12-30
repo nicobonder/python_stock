@@ -4,3 +4,4 @@ plotly
 plotly-express
 yfinance
 plost
+beautifulsoup4

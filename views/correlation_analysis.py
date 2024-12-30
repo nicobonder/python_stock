@@ -6,7 +6,7 @@ import streamlit as st
 import pandas as pd
 import plost
 
-from correlations import eps, revenue_growth
+from correlations import eps, revenue_growth, trailing_pe
 
 
 def app():
@@ -37,3 +37,5 @@ def app():
         eps.eps_correlation()
     elif selected_variable == "Revenue Growth":
         revenue_growth.revenue_growth_correlation()
+    elif selected_variable == "Price-to-Earnings Ratio (P/E)":
+        trailing_pe.fetch_pe_data()
