@@ -15,7 +15,7 @@ def fetch_pe_data():
             return
 
         try:
-            # Scraping de la página de estadísticas de Yahoo Finance
+            # Scraping de la página de estadísticas de Yahoo Finance usando BeautifulSoup
             url = f"https://finance.yahoo.com/quote/{
                 ticker}/key-statistics?p={ticker}"
             headers = {
@@ -37,14 +37,12 @@ def fetch_pe_data():
                     # Extraer las fechas (primera fila)
                     if i == 0:
                         header_cols = row.find_all(["th", "td"])
-                        # Ignorar la primera columna vacía y la columna "Current"
+                        # Ignorar la primera columna vacía y la columna "Current". Empiezo a extraer en la 3ra columna
                         for col in header_cols[2:]:
                             date_text = col.text.strip()
                             try:
                                 pe_dates.append(pd.to_datetime(
                                     date_text).strftime('%Y-%m-%d'))
-                                print("Tipos en pe_dates 1:", [
-                                      type(d) for d in pe_dates])
 
                             except ValueError:
                                 continue
@@ -61,16 +59,10 @@ def fetch_pe_data():
                                 continue
                         print("Valores de Trailing P/E:", pe_data)
 
-                        # Debugging: imprimir los resultados
-                        # print("pe_data:", pe_data)
-                        # print("pe_dates:", pe_dates)
-
             # Verificar si las listas tienen la misma longitud
             if not pe_data or not pe_dates or len(pe_data) != len(pe_dates):
                 st.error("Mismatch between P/E data and dates.")
                 return
-
-            print("Tipos en pe_dates 2:", [type(d) for d in pe_dates])
 
             # Crear el DataFrame
             pe_df = pd.DataFrame({
@@ -88,16 +80,19 @@ def fetch_pe_data():
 
             # Buscar precios más cercanos a las fechas de los trimestres
             price_on_dates = []
+            # Voy a iterar sobre la columna de fechas del dataframe pe_df
             for date in pe_df["Date"]:
                 closest_date = price_data.iloc[
                     (pd.to_datetime(price_data["Date"]) -
                      pd.to_datetime(date)).abs().argmin()
                 ]
+                # Tengo un diccionario con la fecha y el precio más cercano
                 price_on_dates.append({
                     "Date": date,
                     "Price": closest_date["Close"]
                 })
 
+            # Transformo la lista de diccionarios en un DataFrame
             price_df = pd.DataFrame(price_on_dates)
 
             # Combinar datos de P/E y precios

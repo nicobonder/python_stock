@@ -4,7 +4,6 @@ import plotly.graph_objects as go
 import plotly.express as px
 import streamlit as st
 import pandas as pd
-import plost
 
 
 def app():
@@ -76,6 +75,12 @@ def app():
 
         dat = yf.Ticker(ticker_graph)
         print(dat.info)
+
+        # Validar que los datos existen
+        if tickersInfo.empty or 'Adj Close' not in tickersInfo:
+            st.error(f"No data available for ticker {
+                     ticker_graph} in the selected date range.")
+            return
 
         # Seleccionar la columna 'Adj Close'
         df_adj_close = tickersInfo['Adj Close']
