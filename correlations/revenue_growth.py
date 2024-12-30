@@ -4,20 +4,19 @@ import plotly.express as px
 import streamlit as st
 import pandas as pd
 
-import os
-from dotenv import load_dotenv
-import finnhub
+# import os
+# from dotenv import load_dotenv
+# import finnhub
 
 
-# VER SI ESTÁ BIEN QUE TODO ESTO ESTE AFUERA DE LA FUNCION O SI TIENE QUE IR DENTRO
-# Cargar variables del archivo .env
-load_dotenv()
+# # Cargar variables del archivo .env
+# load_dotenv()
 
-# Obtener la API Key desde el entorno
-api_key = os.getenv("FINNHUB_API_KEY")
+# # Obtener la API Key desde el entorno
+# api_key = os.getenv("FINNHUB_API_KEY")
 
-# Usar la API Key con Finnhub
-finnhub_client = finnhub.Client(api_key=api_key)
+# # Usar la API Key con Finnhub
+# finnhub_client = finnhub.Client(api_key=api_key)
 
 
 def revenue_growth_correlation():
