@@ -300,5 +300,64 @@ def app():
 
             st.plotly_chart(fig)
 
+        # Feature monthly performance
+
+        # Filtrar las fechas seleccionadas para asegurarnos de que los datos sean correctos
+        df_adj_close = df_adj_close[
+            (df_adj_close['Date'] >= pd.to_datetime(startDate)) &
+            (df_adj_close['Date'] <= pd.to_datetime(endDate_adjusted))
+        ]
+        # Agregar columna con el mes
+        df_adj_close['Month'] = pd.Categorical(
+            pd.to_datetime(df_adj_close['Date']).dt.month_name(),
+            categories=['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'],
+            ordered=True
+        )
+
+        # Calcular el promedio de variación porcentual para cada mes
+        avg_pct_change_monthly = df_adj_close.groupby(
+            'Month')['Pct_Change'].mean()
+
+        # Resetear el índice para convertir los meses en una columna
+        avg_pct_change_monthly = avg_pct_change_monthly.reset_index()
+
+        avg_pct_change_monthly['Change Type'] = avg_pct_change_monthly['Pct_Change'].apply(
+            lambda x: 'Positive' if x > 0 else 'Negative'
+        )
+
+        fig = px.bar(
+            avg_pct_change_monthly,
+            x='Month',
+            y='Pct_Change',
+            title="Average % Change per Month",
+            labels={'Pct_Change': 'Average % Change',
+                    'Month': 'Month', 'Change Type': ''},
+            text='Pct_Change',
+            color='Change Type',  # Usar la columna de cambio positivo/negativo
+            color_discrete_map={'Positive': 'green',
+                                'Negative': 'red'}  # Mapear colores
+        )
+
+        # Asegurar orden cronológico de los meses
+        fig.update_layout(
+            xaxis=dict(categoryorder='array', categoryarray=[
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December']
+            )
+        )
+
+        # Ajustar formato del texto y layout
+        fig.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
+        fig.update_layout(
+            xaxis_title="Month",
+            yaxis_title="Average % Change",
+            uniformtext_minsize=8,
+            uniformtext_mode='hide'
+        )
+
+        # Mostrar gráfico en Streamlit
+        st.plotly_chart(fig)
+
     else:
         st.warning(f"Ticker '{ticker_graph}' not found in the data.")

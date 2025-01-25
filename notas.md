@@ -77,3 +77,15 @@ response.raise_for_status()
                 for row in rows:
                     cols = row.find_all("td")
                     print([col.text.strip() for col in row.find_all("td")])
+
+# PRomedio mensual de app:
+
+oct: 29.65
+nov: 105.92
+dic: -4.9
+
+# PRomedio mensual de meta:
+
+oct: -1.54
+nov: 1.26
+dic: 1.15

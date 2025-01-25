@@ -1,6 +1,6 @@
 import streamlit as st
 from mainView import MainView
-from views import stock, multi_tickers, two_stocks, correlation_analysis
+from views import stock, multi_tickers, two_stocks, correlation_analysis, ranking
 app = MainView()
 
 st.markdown(
@@ -16,6 +16,7 @@ app.add_app("Stock analysis", stock.app)
 app.add_app("Two Tickers relation", two_stocks.app)
 app.add_app("Multi tickers analysis", multi_tickers.app)
 app.add_app("Correlation analysis", correlation_analysis.app)
+app.add_app("Ranking", ranking.app)
 
 # La app principal:
 app.run()
